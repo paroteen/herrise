@@ -1,20 +1,26 @@
 import React from 'react';
 import { Target, Eye, Heart, Globe, Briefcase, Users, UserCircle } from 'lucide-react';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 export const About: React.FC = () => {
+  const [introRef, introVisible] = useScrollAnimation({ threshold: 0.2 });
+  const [valuesRef, valuesVisible] = useScrollAnimation({ threshold: 0.2 });
+  const [approachRef, approachVisible] = useScrollAnimation({ threshold: 0.2 });
+  const [leadershipRef, leadershipVisible] = useScrollAnimation({ threshold: 0.2 });
+
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       {/* Header */}
       <div className="bg-purple-900 py-20 text-center text-white">
-        <h1 className="text-4xl font-bold mb-4">About Us</h1>
-        <p className="text-purple-100 max-w-2xl mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-4 animate-fade-in-up">About Us</h1>
+        <p className="text-purple-100 max-w-2xl mx-auto px-4 animate-fade-in-up animate-delay-200">
           HerRise Development Organisation is a national NGO committed to creating a society where women and girls are valued, respected, and empowered.
         </p>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
         {/* Intro Card */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-12">
+        <div ref={introRef} className={`bg-white rounded-lg shadow-md p-8 mb-12 ${introVisible ? 'animate-fade-in-up' : 'scroll-animate'}`}>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Who We Are</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
                 Founded in 2015, HerRise started as a small community initiative in Kampala and has since grown into a national organisation. We work hand-in-hand with local leaders, government bodies, and international partners to implement sustainable development programmes that address the root causes of gender inequality.
@@ -25,8 +31,8 @@ export const About: React.FC = () => {
         </div>
 
         {/* Mission, Vision, Values */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white p-8 rounded-lg shadow-sm border-t-4 border-purple-500">
+        <div ref={valuesRef} className={`grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 ${valuesVisible ? 'animate-fade-in-up' : 'scroll-animate'}`}>
+            <div className={`bg-white p-8 rounded-lg shadow-sm border-t-4 border-purple-500 hover:shadow-lg transition-all duration-300 ${valuesVisible ? 'animate-scale-in animate-delay-100' : 'scroll-animate'}`}>
                 <div className="flex items-center gap-3 mb-4">
                     <Target className="text-purple-600" size={28} />
                     <h3 className="text-xl font-bold text-gray-800">Our Mission</h3>
@@ -35,7 +41,7 @@ export const About: React.FC = () => {
                     To advance the rights, dignity, and wellbeing of women and girls through economic empowerment, health advocacy, and education.
                 </p>
             </div>
-            <div className="bg-white p-8 rounded-lg shadow-sm border-t-4 border-teal-500">
+            <div className={`bg-white p-8 rounded-lg shadow-sm border-t-4 border-teal-500 hover:shadow-lg transition-all duration-300 ${valuesVisible ? 'animate-scale-in animate-delay-200' : 'scroll-animate'}`}>
                 <div className="flex items-center gap-3 mb-4">
                     <Eye className="text-teal-600" size={28} />
                     <h3 className="text-xl font-bold text-gray-800">Our Vision</h3>
@@ -44,7 +50,7 @@ export const About: React.FC = () => {
                     A just and equitable society where every woman and girl has the power to determine her own future.
                 </p>
             </div>
-            <div className="bg-white p-8 rounded-lg shadow-sm border-t-4 border-yellow-500">
+            <div className={`bg-white p-8 rounded-lg shadow-sm border-t-4 border-yellow-500 hover:shadow-lg transition-all duration-300 ${valuesVisible ? 'animate-scale-in animate-delay-300' : 'scroll-animate'}`}>
                 <div className="flex items-center gap-3 mb-4">
                     <Heart className="text-yellow-600" size={28} />
                     <h3 className="text-xl font-bold text-gray-800">Our Values</h3>
@@ -60,13 +66,13 @@ export const About: React.FC = () => {
         </div>
 
         {/* Approach Section */}
-        <div className="mb-16">
+        <div ref={approachRef} className={`mb-16 ${approachVisible ? 'animate-fade-in-up' : 'scroll-animate'}`}>
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">How We Work</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div className="order-2 md:order-1">
+                <div className={`order-2 md:order-1 ${approachVisible ? 'animate-slide-in-left' : 'scroll-animate'}`}>
                     <img src="/images/Leadership Development.jpg" alt="Team working in field" className="rounded-xl shadow-lg" />
                 </div>
-                <div className="order-1 md:order-2 space-y-6">
+                <div className={`order-1 md:order-2 space-y-6 ${approachVisible ? 'animate-slide-in-right animate-delay-100' : 'scroll-animate'}`}>
                     <div className="flex gap-4">
                         <div className="flex-shrink-0 mt-1">
                             <Globe className="text-purple-600" size={24}/>
@@ -99,10 +105,10 @@ export const About: React.FC = () => {
         </div>
 
         {/* Leadership Team */}
-        <div className="text-center bg-purple-50 rounded-2xl p-10">
+        <div ref={leadershipRef} className={`text-center bg-purple-50 rounded-2xl p-10 ${leadershipVisible ? 'animate-fade-in-up' : 'scroll-animate'}`}>
             <h2 className="text-2xl font-bold text-purple-900 mb-8">Our Leadership</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-                <div className="bg-white p-6 rounded-xl shadow-sm">
+                <div className={`bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${leadershipVisible ? 'animate-scale-in animate-delay-100' : 'scroll-animate'}`}>
                     <div className="w-24 h-24 bg-purple-100 rounded-full mx-auto flex items-center justify-center text-purple-600 mb-4">
                         <UserCircle size={48} />
                     </div>
@@ -110,7 +116,7 @@ export const About: React.FC = () => {
                     <p className="text-purple-600 font-medium mb-2">Executive Director</p>
                     <p className="text-gray-600 text-sm">Leading HerRise with strategic vision and a passion for women's empowerment.</p>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm">
+                <div className={`bg-white p-6 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ${leadershipVisible ? 'animate-scale-in animate-delay-200' : 'scroll-animate'}`}>
                     <div className="w-24 h-24 bg-teal-100 rounded-full mx-auto flex items-center justify-center text-teal-600 mb-4">
                         <UserCircle size={48} />
                     </div>

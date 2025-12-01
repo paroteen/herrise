@@ -1,6 +1,7 @@
 import React from 'react';
 import { BookOpen, DollarSign, HeartPulse, ShieldAlert, Users } from 'lucide-react';
 import { Programme } from '../types';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const programmes: Programme[] = [
   {
@@ -56,29 +57,39 @@ export const Programmes: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 space-y-20">
-        {programmes.map((prog, index) => (
-            <div key={prog.id} className={`flex flex-col lg:flex-row gap-12 items-center ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}>
-                <div className="w-full lg:w-1/2">
+        {programmes.map((prog, index) => {
+          const ProgrammeItem: React.FC<{ programme: Programme; idx: number }> = ({ programme, idx }) => {
+            const [ref, isVisible] = useScrollAnimation({ threshold: 0.2 });
+            const animationClass = idx % 2 === 0 ? 'animate-slide-in-left' : 'animate-slide-in-right';
+            const imageAnimation = idx % 2 === 0 ? 'animate-slide-in-right' : 'animate-slide-in-left';
+            
+            return (
+              <div ref={ref} className={`flex flex-col lg:flex-row gap-12 items-center ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''} ${isVisible ? animationClass : 'scroll-animate'}`}>
+                <div className={`w-full lg:w-1/2 ${isVisible ? imageAnimation + ' animate-delay-100' : 'scroll-animate'}`}>
                     <div className="relative rounded-2xl overflow-hidden shadow-xl">
-                        <img src={prog.image} alt={prog.title} className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
+                        <img src={programme.image} alt={programme.title} className="w-full h-80 object-cover hover:scale-105 transition-transform duration-500" />
                         <div className="absolute top-4 right-4 bg-white p-3 rounded-full text-teal-600 shadow-sm">
-                            {prog.icon}
+                            {programme.icon}
                         </div>
                     </div>
                 </div>
-                <div className="w-full lg:w-1/2 space-y-6">
-                    <h2 className="text-3xl font-bold text-gray-900">{prog.title}</h2>
+                <div className={`w-full lg:w-1/2 space-y-6 ${isVisible ? 'animate-fade-in-up animate-delay-200' : 'scroll-animate'}`}>
+                    <h2 className="text-3xl font-bold text-gray-900">{programme.title}</h2>
                     <div className="w-20 h-1 bg-yellow-400"></div>
                     <p className="text-lg text-gray-600 leading-relaxed">
-                        {prog.description}
+                        {programme.description}
                     </p>
                     <div className="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-600">
                         <h4 className="font-bold text-purple-900 mb-2">Impact Highlight</h4>
-                        <p className="text-purple-800 text-sm">{prog.impact}</p>
+                        <p className="text-purple-800 text-sm">{programme.impact}</p>
                     </div>
                 </div>
-            </div>
-        ))}
+              </div>
+            );
+          };
+          
+          return <ProgrammeItem key={prog.id} programme={prog} idx={index} />;
+        })}
       </div>
     </div>
   );

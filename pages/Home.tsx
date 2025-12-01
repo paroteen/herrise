@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Shield, TrendingUp, BookOpen } from 'lucide-react';
 import { Stat } from '../types';
+import { useCountUpWithRef } from '../hooks/useCountUp';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const stats: Stat[] = [
   { label: 'Women Empowered', value: '300', description: 'Across 30 active women\'s groups' },
@@ -10,7 +12,49 @@ const stats: Stat[] = [
   { label: 'Health Outreach', value: '450+', description: 'Community members reached' },
 ];
 
+// Component for animated stat counter
+const AnimatedStat: React.FC<{ stat: Stat; index: number }> = ({ stat, index }) => {
+  // Extract number from value (handles "50+", "450+" etc.)
+  const numericValue = parseInt(stat.value.replace(/\D/g, '')) || 0;
+  const suffix = stat.value.replace(/\d/g, ''); // Get the "+" or other suffix
+  
+  const [count, ref] = useCountUpWithRef(numericValue, { duration: 2000, startOnView: true });
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return (
+    <div ref={ref} className={`bg-white/10 rounded-lg p-6 backdrop-blur-sm transition-all duration-500 ${isVisible ? 'animate-scale-in' : 'opacity-0 scale-95'}`}>
+      <div className="text-4xl font-bold text-yellow-300 mb-2">
+        {count}{suffix}
+      </div>
+      <div className="text-lg font-semibold text-white mb-1">{stat.label}</div>
+      <div className="text-sm text-teal-100">{stat.description}</div>
+    </div>
+  );
+};
+
 export const Home: React.FC = () => {
+  const [missionRef, missionVisible] = useScrollAnimation({ threshold: 0.2 });
+  const [ctaRef, ctaVisible] = useScrollAnimation({ threshold: 0.2 });
+
   return (
     <div className="flex flex-col min-h-screen">
       
@@ -26,7 +70,7 @@ export const Home: React.FC = () => {
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 lg:py-40">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl animate-fade-in-up">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
               Empowering Women, <br/>
               <span className="text-yellow-400">Transforming Communities</span>
@@ -57,18 +101,14 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
             {stats.map((stat, idx) => (
-              <div key={idx} className="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
-                <div className="text-4xl font-bold text-yellow-300 mb-2">{stat.value}</div>
-                <div className="text-lg font-semibold text-white mb-1">{stat.label}</div>
-                <div className="text-sm text-teal-100">{stat.description}</div>
-              </div>
+              <AnimatedStat key={idx} stat={stat} index={idx} />
             ))}
           </div>
         </div>
       </div>
 
       {/* Mission Overview */}
-      <section className="py-20 bg-white">
+      <section ref={missionRef} className={`py-20 bg-white ${missionVisible ? 'animate-fade-in-up' : 'scroll-animate'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl font-bold text-purple-900 mb-4">Our Holistic Approach</h2>
@@ -78,7 +118,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-lg transition-shadow">
+            <div className={`bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-lg transition-all duration-300 hover:scale-105 ${missionVisible ? 'animate-fade-in-up animate-delay-100' : 'scroll-animate'}`}>
               <div className="bg-purple-100 w-14 h-14 rounded-full flex items-center justify-center text-purple-600 mb-6">
                 <TrendingUp size={28} />
               </div>
@@ -91,7 +131,7 @@ export const Home: React.FC = () => {
               </Link>
             </div>
 
-            <div className="bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-lg transition-shadow">
+            <div className={`bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-lg transition-all duration-300 hover:scale-105 ${missionVisible ? 'animate-fade-in-up animate-delay-200' : 'scroll-animate'}`}>
               <div className="bg-teal-100 w-14 h-14 rounded-full flex items-center justify-center text-teal-600 mb-6">
                 <Shield size={28} />
               </div>
@@ -104,7 +144,7 @@ export const Home: React.FC = () => {
               </Link>
             </div>
 
-            <div className="bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-lg transition-shadow">
+            <div className={`bg-slate-50 p-8 rounded-xl border border-slate-100 hover:shadow-lg transition-all duration-300 hover:scale-105 ${missionVisible ? 'animate-fade-in-up animate-delay-300' : 'scroll-animate'}`}>
               <div className="bg-yellow-100 w-14 h-14 rounded-full flex items-center justify-center text-yellow-600 mb-6">
                 <Users size={28} />
               </div>
@@ -121,18 +161,18 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Featured Story / CTA */}
-      <section className="py-20 bg-slate-50">
+      <section ref={ctaRef} className={`py-20 bg-slate-50 ${ctaVisible ? 'animate-fade-in-up' : 'scroll-animate'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2">
-              <div className="relative h-64 lg:h-auto">
+              <div className={`relative h-64 lg:h-auto ${ctaVisible ? 'animate-scale-in' : 'scroll-animate'}`}>
                 <img 
                   src="/images/Partner With Us for Change .webp" 
                   alt="Community meeting" 
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
-              <div className="p-10 lg:p-16 flex flex-col justify-center">
+              <div className={`p-10 lg:p-16 flex flex-col justify-center ${ctaVisible ? 'animate-fade-in-up animate-delay-200' : 'scroll-animate'}`}>
                 <h3 className="text-2xl font-bold text-purple-900 mb-4">Partner With Us for Change</h3>
                 <p className="text-gray-600 mb-8 leading-relaxed">
                   Sustainable change requires collective action. Whether you are a donor, a corporate partner, or a volunteer, your contribution helps us expand our reach to the most vulnerable regions of Uganda. Join us in building a future where every woman is free, safe, and empowered.
