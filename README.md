@@ -1,20 +1,62 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# HerRise Development Organisation
 
-# Run and deploy your AI Studio app
+A website for HerRise Development Organisation - a national Non-Governmental Organisation committed to advancing the rights, wellbeing, and empowerment of women and girls across Uganda.
 
-This contains everything you need to run your app locally.
+## 🌐 Live Site
 
-View your app in AI Studio: https://ai.studio/apps/drive/1gyj_ATiYMZGrkz4lEZ-JxC3JnqeFJ995
+**Site Preview:** [herrise.vercel.app](https://herrise.vercel.app)
 
-## Run Locally
+## 🚀 Getting Started
 
-**Prerequisites:**  Node.js
+### Prerequisites
 
+- Node.js (v16 or higher)
+- npm or yarn
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/paroteen/herrise.git
+   cd herrise
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:3000`
+
+## 📦 Build for Production
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+## 🏗️ Project Structure
+
+- `/pages` - React page components
+- `/components` - Reusable React components
+- `/public/images` - Static images and assets
+- `/types.ts` - TypeScript type definitions
+
+## 🎯 Features
+
+- Responsive design
+- Multiple pages: Home, About, Programmes, Partnerships, Projects, Monitoring & Evaluation, Get Involved, Contact
+- Modern UI with Tailwind CSS
+- React Router for navigation
+
+## 📝 License
+
+This project is private and proprietary to HerRise Development Organisation.

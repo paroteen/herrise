@@ -18,7 +18,7 @@ export const Home: React.FC = () => {
       <div className="relative bg-purple-900 text-white">
         <div className="absolute inset-0">
           <img 
-            src="https://picsum.photos/id/1011/1920/1080" 
+            src="/images/Economic Empowerment.jpg" 
             alt="Ugandan women gathering" 
             className="w-full h-full object-cover opacity-20"
           />
@@ -127,7 +127,7 @@ export const Home: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2">
               <div className="relative h-64 lg:h-auto">
                 <img 
-                  src="https://picsum.photos/id/1025/800/800" 
+                  src="/images/Partner With Us for Change .webp" 
                   alt="Community meeting" 
                   className="absolute inset-0 w-full h-full object-cover"
                 />

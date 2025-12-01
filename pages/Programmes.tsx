@@ -9,7 +9,7 @@ const programmes: Programme[] = [
     icon: <DollarSign size={40} />,
     description: 'We form Village Savings and Loan Associations (VSLAs) and provide vocational training in agriculture, tailoring, and crafts.',
     impact: 'Our 30 women\'s groups (300 members) have started sustainable small businesses, improving household income stability.',
-    image: 'https://picsum.photos/id/292/800/600'
+    image: '/images/Economic Empowerment.jpg'
   },
   {
     id: 'health',
@@ -17,7 +17,7 @@ const programmes: Programme[] = [
     icon: <HeartPulse size={40} />,
     description: 'Focusing on Sexual and Reproductive Health and Rights (SRHR), maternal health, and hygiene promotion in rural areas.',
     impact: 'Reaching women and girls in our partner districts with essential health information and referrals.',
-    image: 'https://picsum.photos/id/338/800/600'
+    image: '/images/Health Support .png'
   },
   {
     id: 'gbv',
@@ -25,7 +25,7 @@ const programmes: Programme[] = [
     icon: <ShieldAlert size={40} />,
     description: 'Community dialogues, legal aid clinics, and psycho-social support for survivors of domestic violence and abuse.',
     impact: 'Provided counseling and guidance to survivors within our active community groups.',
-    image: 'https://picsum.photos/id/1027/800/600'
+    image: '/images/GBV Preventation.jpg'
   },
   {
     id: 'education',
@@ -33,7 +33,7 @@ const programmes: Programme[] = [
     icon: <BookOpen size={40} />,
     description: 'Scholarships for vulnerable girls, mentorship programmes, and provision of scholastic materials and sanitary pads.',
     impact: 'Supporting over 50 vulnerable girls with scholastic materials and mentorship.',
-    image: 'https://picsum.photos/id/453/800/600'
+    image: '/images/education support.webp'
   },
   {
     id: 'leadership',
@@ -41,7 +41,7 @@ const programmes: Programme[] = [
     icon: <Users size={40} />,
     description: 'Training young women in public speaking, civic rights, and advocacy to participate in local governance.',
     impact: 'Members of our women\'s groups are increasingly taking up leadership roles in their local councils.',
-    image: 'https://picsum.photos/id/64/800/600'
+    image: '/images/Leadership Development.jpg'
   }
 ];
 

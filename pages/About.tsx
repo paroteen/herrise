@@ -64,7 +64,7 @@ export const About: React.FC = () => {
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">How We Work</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div className="order-2 md:order-1">
-                    <img src="https://picsum.photos/id/325/600/400" alt="Team working in field" className="rounded-xl shadow-lg" />
+                    <img src="/images/Leadership Development.jpg" alt="Team working in field" className="rounded-xl shadow-lg" />
                 </div>
                 <div className="order-1 md:order-2 space-y-6">
                     <div className="flex gap-4">
