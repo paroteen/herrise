@@ -4,7 +4,9 @@ A website for HerRise Development Organisation - a national Non-Governmental Org
 
 ## 🌐 Live Site
 
-**Site Preview:** [herrise.vercel.app](https://herrise.vercel.app)
+**Official Website:** [herrisedevelopment.org](https://herrisedevelopment.org)
+
+**Vercel Preview:** [herrise.vercel.app](https://herrise.vercel.app)
 
 ## 🚀 Getting Started
 
