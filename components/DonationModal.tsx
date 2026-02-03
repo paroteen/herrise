@@ -4,126 +4,248 @@ import { X } from 'lucide-react';
 interface DonationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onDonate: (amount: number, paymentMethod: string, email: string) => void;
+  onDonate: (amount: number, paymentMethod: string, email: string, name: string) => void;
 }
 
 const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, onDonate }) => {
   const [amount, setAmount] = useState<number | ''>('');
-  const [paymentMethod, setPaymentMethod] = useState('mobile_money');
-  const [email, setEmail] = useState('');
-  const [isCustomAmount, setIsCustomAmount] = useState(false);
+  const [customAmount, setCustomAmount] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<string>('card');
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [purpose, setPurpose] = useState<string>('general');
+  const [message, setMessage] = useState<string>('');
+  const [consent, setConsent] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (amount && paymentMethod) {
-      onDonate(Number(amount), paymentMethod, email);
+    if ((amount || customAmount) && paymentMethod && name && email && consent) {
+      onDonate(
+        customAmount ? Number(customAmount) : Number(amount),
+        paymentMethod,
+        email,
+        name
+      );
     }
   };
 
+  const handleAmountSelect = (value: number) => {
+    setAmount(value);
+    setCustomAmount('');
+  };
+
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value);
+    setAmount(0);
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-md relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
-          <X size={24} />
-        </button>
-        
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-purple-900 mb-6">Make a Donation</h2>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
+        <div className="relative p-6 sm:p-10">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          >
+            <X size={24} />
+          </button>
+
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">Donate Now</h2>
+            <p className="mt-2 text-sm sm:text-base text-gray-600">
+              Your donation makes a difference. Please fill out the form below to contribute.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Donor Information */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Donation Amount (RWF)
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name*
               </label>
-              <div className="grid grid-cols-3 gap-2 mb-2">
-                {[5000, 10000, 20000].map((value) => (
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-md border border-gray-300 p-3 text-sm text-gray-800 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address*
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 p-3 text-sm text-gray-800 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number (Optional)
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full rounded-md border border-gray-300 p-3 text-sm text-gray-800 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Donation Amount */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Donation Amount (RWF)*
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                {[5000, 10000, 25000, 50000].map((value) => (
                   <button
                     key={value}
                     type="button"
-                    onClick={() => {
-                      setAmount(value);
-                      setIsCustomAmount(false);
-                    }}
-                    className={`py-2 px-4 rounded-md border ${
-                      amount === value && !isCustomAmount
+                    onClick={() => handleAmountSelect(value)}
+                    className={`py-3 px-2 rounded-md border ${
+                      amount === value
                         ? 'bg-purple-100 border-purple-500 text-purple-700'
                         : 'border-gray-300 hover:bg-gray-50'
-                    }`}
+                    } transition-colors`}
                   >
                     {value.toLocaleString()}
                   </button>
                 ))}
               </div>
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="customAmount"
-                  checked={isCustomAmount}
-                  onChange={() => {
-                    setIsCustomAmount(true);
-                    setAmount('');
-                  }}
-                  className="h-4 w-4 text-purple-600"
-                />
-                <label htmlFor="customAmount" className="ml-2 text-sm text-gray-700">
-                  Other Amount
+              <div className="mt-2">
+                <label htmlFor="custom-amount" className="block text-sm font-medium text-gray-700 mb-1">
+                  Or enter a custom amount
                 </label>
-              </div>
-              {isCustomAmount && (
                 <input
                   type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value) || '')}
+                  id="custom-amount"
+                  value={customAmount}
+                  onChange={handleCustomAmountChange}
                   placeholder="Enter amount"
-                  className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                  className="w-full rounded-md border border-gray-300 p-3 text-sm text-gray-800 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
                   min="100"
                   step="100"
-                  required
                 />
-              )}
+              </div>
             </div>
 
+            {/* Payment Method */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payment Method
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Payment Method*
+              </label>
+              <div className="space-y-2">
+                <label className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value="mobile_money"
+                    checked={paymentMethod === 'mobile_money'}
+                    onChange={() => setPaymentMethod('mobile_money')}
+                    className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                    required
+                  />
+                  <span className="ml-3 text-sm text-gray-700">Mobile Money</span>
+                </label>
+                <label className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value="card"
+                    checked={paymentMethod === 'card'}
+                    onChange={() => setPaymentMethod('card')}
+                    className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span className="ml-3 text-sm text-gray-700">Credit/Debit Card</span>
+                </label>
+                <label className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value="bank"
+                    checked={paymentMethod === 'bank'}
+                    onChange={() => setPaymentMethod('bank')}
+                    className="h-4 w-4 text-purple-600 focus:ring-purple-500"
+                  />
+                  <span className="ml-3 text-sm text-gray-700">Bank Transfer</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Purpose */}
+            <div>
+              <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-1">
+                Purpose (Optional)
               </label>
               <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-purple-500 focus:outline-none focus:ring-purple-500 sm:text-sm"
-                required
+                id="purpose"
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                className="w-full rounded-md border border-gray-300 p-3 text-sm text-gray-800 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
               >
-                <option value="mobile_money">Mobile Money</option>
-                <option value="card">Credit/Debit Card</option>
-                <option value="bank">Bank Transfer</option>
+                <option value="general">General Donation</option>
+                <option value="education">Education Programs</option>
+                <option value="healthcare">Healthcare Support</option>
+                <option value="empowerment">Women Empowerment</option>
               </select>
             </div>
 
+            {/* Message */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email (Optional)
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                Message (Optional)
               </label>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
-              />
+              <textarea
+                id="message"
+                rows={3}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full rounded-md border border-gray-300 p-3 text-sm text-gray-800 shadow-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+                placeholder="Add a message with your donation"
+              ></textarea>
             </div>
 
+            {/* Consent */}
+            <div className="flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  id="consent"
+                  name="consent"
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                  required
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor="consent" className="font-medium text-gray-700">
+                  I agree to the terms and understand this donation is non-refundable.
+                </label>
+                <p className="text-gray-500">Your donation will be processed securely.</p>
+              </div>
+            </div>
+
+            {/* Submit Button */}
             <button
               type="submit"
-              disabled={!amount}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!consent || (!amount && !customAmount) || !name || !email}
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Donate {amount ? `RWF ${Number(amount).toLocaleString()}` : ''}
+              Donate Now {(amount || customAmount) && `RWF ${(customAmount || amount)?.toLocaleString()}`}
             </button>
           </form>
         </div>

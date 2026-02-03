@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, HeartHandshake } from 'lucide-react';
 import { NavItem } from '../types';
-import { useIremboPay } from '../utils/iremboPay';
 import DonationModal from './DonationModal';
 
 const navItems: NavItem[] = [
@@ -21,7 +20,6 @@ export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const location = useLocation();
-  const { handleDonation } = useIremboPay();
 
   const toggleMenu = () => setIsOpen(!isOpen);
   
@@ -30,13 +28,14 @@ export const Navbar: React.FC = () => {
     setIsDonationModalOpen(true);
   };
 
-  const handleDonate = (amount: number, paymentMethod: string, email: string) => {
-    // You can add additional logic here based on payment method
-    handleDonation(amount, {
-      description: `Donation via ${paymentMethod}`,
-      customerEmail: email,
-    });
+  const handleDonate = (amount: number, paymentMethod: string, email: string, name: string) => {
+    console.log(`Donation of RWF ${amount} from ${name} (${email}) via ${paymentMethod}`);
+    // Here you can integrate with your payment processor
+    // For now, we'll just log the donation and close the modal
     setIsDonationModalOpen(false);
+    
+    // Show a success message or redirect to a thank you page
+    alert(`Thank you for your donation of RWF ${amount.toLocaleString()}!`);
   };
 
   const getLinkClass = (path: string) => {
