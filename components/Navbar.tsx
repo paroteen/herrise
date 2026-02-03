@@ -59,12 +59,17 @@ export const Navbar: React.FC = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <NavLink to="/" className="flex-shrink-0 flex items-center gap-2">
-              <div className="bg-purple-700 p-2 rounded-full text-white">
-                <HeartHandshake size={24} />
-              </div>
-              <span className="font-bold text-xl tracking-tight text-purple-900">
-                HerRise
-              </span>
+              <img 
+                src="/images/herrise-logo.png" 
+                alt="HerRise Initiative Logo" 
+                className="h-12 w-auto"
+                onError={(e) => {
+                  // Fallback in case the image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = 'https://via.placeholder.com/150x50?text=HerRise+Logo';
+                }}
+              />
             </NavLink>
           </div>
           

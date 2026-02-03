@@ -33,33 +33,60 @@ const ImpactStories: React.FC = () => {
       location: "Kampala, Uganda",
       category: "Education",
       author: "Jane Nalwoga",
-      authorRole: "Program Director"
+      authorRole: "Program Director",
+      content: `In the heart of Kabare, 50 young women are breaking barriers through technology. Our 12-week intensive coding bootcamp provided them with essential digital skills, from web development to mobile app creation. Many of these women had never used a computer before, but through dedication and hard work, they've built their first websites and mobile applications.\n\nOne of our success stories is Sarah, a 22-year-old from the outskirts of Kabare, who developed a mobile app connecting local farmers to markets. "This program changed my life," Sarah says. "I can now support my family and inspire other girls in my community."\n\nThe bootcamp not only taught technical skills but also included modules on entrepreneurship, financial literacy, and leadership. Graduates have gone on to secure jobs in tech companies or start their own businesses, contributing to Uganda's growing digital economy.`,
     },
     {
       id: 2,
-      title: "Breaking Barriers in Rural Communities",
-      excerpt: "Our initiative to bring digital literacy to remote areas of Uganda",
-      content: `In the rural regions of Northern Uganda, access to technology and digital education remains a significant challenge. Our mobile digital literacy program is changing that, one village at a time. We've equipped over 200 women with tablets and trained them in basic digital skills, internet usage, and online safety.\n\nOne participant, Grace, a mother of four from Gulu, shared how the program transformed her life: "I can now video call my children who are studying in the city, and I've even started a small online business selling handmade crafts."\n\nOur program focuses on practical, income-generating skills that empower women to improve their livelihoods while bridging the digital divide in Uganda's most underserved communities.`,
-      image: "/images/story2.jpg",
-      date: "22 Feb 2024",
-      readTime: "4 min read",
-      location: "Gulu, Uganda",
-      category: "Community",
+      title: "Bridging the Healthcare Gap: Mobile Clinics Reach Remote Villages",
+      excerpt: "Our mobile health units are bringing essential medical care to the doorsteps of women and children in Uganda's most remote communities.",
+      image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      date: "28 May 2024",
+      readTime: "7 min read",
+      location: "Rural Kabare, Uganda",
+      category: "Health Support",
       author: "David Ocen",
-      authorRole: "Field Coordinator"
+      authorRole: "Field Coordinator",
+      content: `In the rural regions of Northern Uganda, access to technology and digital education remains a significant challenge. Our mobile digital literacy program is changing that, one village at a time. We've equipped over 200 women with tablets and trained them in basic digital skills, internet usage, and online safety.\n\nOne participant, Grace, a mother of four from Gulu, shared how the program transformed her life: "I can now video call my children who are studying in the city, and I've even started a small online business selling handmade crafts."\n\nOur program focuses on practical, income-generating skills that empower women to improve their livelihoods while bridging the digital divide in Uganda's most underserved communities.`,
     },
     {
       id: 3,
-      title: "Mentorship Program Success Stories",
-      excerpt: "How our mentorship program is creating the next generation of female leaders",
+      title: "Breaking the Silence: Community-Led GBV Prevention in Kampala",
+      excerpt: "How grassroots initiatives are empowering communities to prevent and respond to gender-based violence in urban Uganda.",
+      image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      date: "12 May 2024",
+      readTime: "8 min read",
+      location: "Kampala, Uganda",
+      category: "GBV Prevention",
+      author: "Sarah Kintu",
+      authorRole: "Mentorship Coordinator",
       content: `Our mentorship program pairs young women with established professionals in their fields of interest, creating powerful connections that inspire and guide the next generation of Ugandan women leaders. Over the past year, we've matched 75 mentor-mentee pairs across various industries.\n\nOne remarkable success story is that of Amina, a 19-year-old aspiring engineer from Jinja. Through our program, she was paired with a senior engineer at a leading tech company in Kampala. "My mentor has not only guided me technically but also helped me build confidence in a male-dominated field," Amina shares.\n\nThese mentorship relationships are breaking down barriers and creating a strong network of professional women supporting each other's growth and success in Uganda's workforce.`,
-      image: "/images/story3.jpg",
-      date: "10 Mar 2024",
-      readTime: "6 min read",
-      location: "Jinja, Uganda",
+    },
+    {
+      id: 4,
+      title: "Back to School: Keeping Girls in Education Beyond Primary Level",
+      excerpt: "Our scholarship program is breaking down barriers to education for girls in rural Uganda, one student at a time.",
+      image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+      date: "22 Apr 2024",
+      readTime: "7 min read",
+      location: "Kabare, Uganda",
+      category: "Education",
+      author: "Jane Nalwoga",
+      authorRole: "Program Director",
+      content: `In the heart of Kabare, 50 young women are breaking barriers through technology. Our 12-week intensive coding bootcamp provided them with essential digital skills, from web development to mobile app creation. Many of these women had never used a computer before, but through dedication and hard work, they've built their first websites and mobile applications.\n\nOne of our success stories is Sarah, a 22-year-old from the outskirts of Kabare, who developed a mobile app connecting local farmers to markets. "This program changed my life," Sarah says. "I can now support my family and inspire other girls in my community."\n\nThe bootcamp not only taught technical skills but also included modules on entrepreneurship, financial literacy, and leadership. Graduates have gone on to secure jobs in tech companies or start their own businesses, contributing to Uganda's growing digital economy.`,
+    },
+    {
+      id: 5,
+      title: "Leading the Way: Women Shaping Uganda's Future",
+      excerpt: "Meet the women breaking barriers and taking on leadership roles in their communities and beyond.",
+      image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80",
+      date: "05 Apr 2024",
+      readTime: "8 min read",
+      location: "Kampala, Uganda",
       category: "Leadership",
       author: "Sarah Kintu",
-      authorRole: "Mentorship Coordinator"
+      authorRole: "Mentorship Coordinator",
+      content: `Our mentorship program pairs young women with established professionals in their fields of interest, creating powerful connections that inspire and guide the next generation of Ugandan women leaders. Over the past year, we've matched 75 mentor-mentee pairs across various industries.\n\nOne remarkable success story is that of Amina, a 19-year-old aspiring engineer from Jinja. Through our program, she was paired with a senior engineer at a leading tech company in Kampala. "My mentor has not only guided me technically but also helped me build confidence in a male-dominated field," Amina shares.\n\nThese mentorship relationships are breaking down barriers and creating a strong network of professional women supporting each other's growth and success in Uganda's workforce.`,
     },
   ];
 
@@ -120,10 +147,15 @@ const ImpactStories: React.FC = () => {
                 </h3>
                 <p className="text-gray-600 mb-4 line-clamp-2">{story.excerpt}</p>
                 <div className="flex flex-wrap justify-between items-center mt-4">
-                  <div className="flex items-center text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                    <MapPin size={14} className="mr-1.5 flex-shrink-0" />
-                    <span>{story.location}</span>
-                  </div>
+                  <span className={`inline-block px-3 py-1 text-sm font-semibold rounded-full mb-4 ${
+            story.category === 'Economic Empowerment' ? 'bg-yellow-100 text-yellow-800' :
+            story.category === 'Health Support' ? 'bg-blue-100 text-blue-800' :
+            story.category === 'GBV Prevention' ? 'bg-red-100 text-red-800' :
+            story.category === 'Education' ? 'bg-green-100 text-green-800' :
+            'bg-purple-100 text-purple-800'
+          }`}>
+            {story.category}
+          </span>
                   <span className="inline-flex items-center text-purple-600 font-medium group-hover:text-purple-800 transition-colors">
                     Read more
                     <ArrowRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
