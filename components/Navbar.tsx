@@ -58,10 +58,10 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
-            <NavLink to="/" className="flex-shrink-0 flex items-center gap-2">
+            <NavLink to="/" className="flex-shrink-0">
               <img 
-                src="/images/herrise-logo.png" 
-                alt="HerRise Initiative Logo" 
+                src="/images/logo.jpeg" 
+                alt="HerRise Initiative" 
                 className="h-12 w-auto"
                 onError={(e) => {
                   // Fallback in case the image fails to load
