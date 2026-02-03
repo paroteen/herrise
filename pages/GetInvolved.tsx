@@ -1,8 +1,11 @@
 import React from 'react';
 import { Heart, Hand, Gift, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useIremboPay } from '../utils/iremboPay';
 
 export const GetInvolved: React.FC = () => {
+  const { handleDonation } = useIremboPay();
+
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
       <div className="bg-yellow-500 py-20 text-center text-white">
@@ -38,7 +41,10 @@ export const GetInvolved: React.FC = () => {
                 <p className="text-gray-600 mb-6">
                     Every shilling counts. Support a specific project or give to our general fund to keep the lights on.
                 </p>
-                <button className="bg-yellow-500 text-white px-6 py-2 rounded-full font-bold hover:bg-yellow-600">
+                <button 
+                  onClick={() => handleDonation()}
+                  className="bg-yellow-500 text-white px-6 py-2 rounded-full font-bold hover:bg-yellow-600 transition-colors"
+                >
                     Donate Now
                 </button>
             </div>

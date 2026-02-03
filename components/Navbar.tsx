@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, HeartHandshake } from 'lucide-react';
 import { NavItem } from '../types';
+import { useIremboPay } from '../utils/iremboPay';
 
 const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
@@ -17,8 +18,14 @@ const navItems: NavItem[] = [
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { handleDonation } = useIremboPay();
 
   const toggleMenu = () => setIsOpen(!isOpen);
+  
+  const handleDonateClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleDonation();
+  };
 
   const getLinkClass = (path: string) => {
     const isActive = location.pathname === path;
@@ -61,12 +68,12 @@ export const Navbar: React.FC = () => {
                 {item.label}
               </NavLink>
             ))}
-            <NavLink 
-              to="/get-involved"
+            <button
+              onClick={handleDonateClick}
               className="ml-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-full transition-colors shadow-sm"
             >
               Donate
-            </NavLink>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -96,13 +103,15 @@ export const Navbar: React.FC = () => {
                 {item.label}
               </NavLink>
             ))}
-            <NavLink
-                to="/get-involved"
-                onClick={() => setIsOpen(false)}
-                className="block w-full text-center mt-4 px-4 py-3 bg-yellow-500 text-white font-bold rounded-md"
+            <button
+                onClick={(e) => {
+                  setIsOpen(false);
+                  handleDonateClick(e);
+                }}
+                className="block w-full text-center mt-4 px-4 py-3 bg-yellow-500 text-white font-bold rounded-md hover:bg-yellow-600 transition-colors"
             >
                 Donate Now
-            </NavLink>
+            </button>
           </div>
         </div>
       )}
