@@ -10,6 +10,7 @@ import { Projects } from './pages/Projects';
 import { MonitoringEvaluation } from './pages/ME';
 import { GetInvolved } from './pages/GetInvolved';
 import { Contact } from './pages/Contact';
+import ImpactStories from './pages/impact-stories';
 
 // Scroll to top wrapper
 const ScrollToTop = () => {
@@ -37,6 +38,7 @@ const App: React.FC = () => {
             <Route path="/projects" element={<Projects />} />
             <Route path="/monitoring-evaluation" element={<MonitoringEvaluation />} />
             <Route path="/get-involved" element={<GetInvolved />} />
+            <Route path="/impact-stories" element={<ImpactStories />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>

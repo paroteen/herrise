@@ -3,12 +3,14 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, HeartHandshake } from 'lucide-react';
 import { NavItem } from '../types';
 import { useIremboPay } from '../utils/iremboPay';
+import DonationModal from './DonationModal';
 
 const navItems: NavItem[] = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
   { label: 'Programmes', path: '/programmes' },
   { label: 'Projects', path: '/projects' },
+  { label: 'Impact Stories', path: '/impact-stories' },
   { label: 'M & E', path: '/monitoring-evaluation' },
   { label: 'Partnerships', path: '/partnerships' },
   { label: 'Get Involved', path: '/get-involved' },
@@ -17,6 +19,7 @@ const navItems: NavItem[] = [
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const location = useLocation();
   const { handleDonation } = useIremboPay();
 
@@ -24,7 +27,16 @@ export const Navbar: React.FC = () => {
   
   const handleDonateClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleDonation();
+    setIsDonationModalOpen(true);
+  };
+
+  const handleDonate = (amount: number, paymentMethod: string, email: string) => {
+    // You can add additional logic here based on payment method
+    handleDonation(amount, {
+      description: `Donation via ${paymentMethod}`,
+      customerEmail: email,
+    });
+    setIsDonationModalOpen(false);
   };
 
   const getLinkClass = (path: string) => {
@@ -37,7 +49,13 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md">
+    <>
+      <DonationModal
+        isOpen={isDonationModalOpen}
+        onClose={() => setIsDonationModalOpen(false)}
+        onDonate={handleDonate}
+      />
+      <nav className="sticky top-0 z-50 bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
@@ -115,6 +133,7 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
-    </nav>
+      </nav>
+    </>
   );
 };
