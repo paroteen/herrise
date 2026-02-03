@@ -62,7 +62,7 @@ export const Navbar: React.FC = () => {
               <img 
                 src="/images/logo.jpeg" 
                 alt="HerRise Initiative" 
-                className="h-16 w-auto"
+                className="h-20 w-auto"
                 onError={(e) => {
                   // Fallback in case the image fails to load
                   const target = e.target as HTMLImageElement;
