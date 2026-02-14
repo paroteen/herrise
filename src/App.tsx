@@ -11,8 +11,9 @@ import { MonitoringEvaluation } from '@/pages/ME';
 import { GetInvolved } from '@/pages/GetInvolved';
 import { Contact } from '@/pages/Contact';
 import ImpactStories from '@/pages/impact-stories';
+import SheStories from '@/pages/SheStories';
 import StoryDetail from '@/components/StoryDetail';
-import { AdminStories, AdminLogin, ToastProvider } from '@/admin';
+import { AdminStories, AdminSheStories, AdminLogin, ToastProvider } from '@/admin';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -41,9 +42,11 @@ const AppLayout: React.FC = () => {
             <Route path="/monitoring-evaluation" element={<MonitoringEvaluation />} />
             <Route path="/get-involved" element={<GetInvolved />} />
             <Route path="/impact-stories" element={<ImpactStories />} />
+            <Route path="/she-stories" element={<SheStories />} />
             <Route path="/stories/:id" element={<StoryDetail />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<ToastProvider><AdminStories /></ToastProvider>} />
+            <Route path="/admin/she-stories" element={<ToastProvider><AdminSheStories /></ToastProvider>} />
             <Route path="/admin/login" element={<AdminLogin />} />
           </Routes>
         </main>

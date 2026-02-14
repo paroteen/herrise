@@ -27,6 +27,27 @@ export type ImpactStoryInsert = Omit<ImpactStoryRow, 'id' | 'created_at' | 'upda
 
 export type ImpactStoryUpdate = Partial<Omit<ImpactStoryRow, 'id'>>;
 
+export type SheStoryRow = {
+  id: number;
+  title: string;
+  name: string;
+  content: string;
+  change_achieved: string[];
+  quote: string;
+  image_url: string;
+  image_caption: string;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export type SheStoryInsert = Omit<SheStoryRow, 'id' | 'created_at' | 'updated_at'> & {
+  id?: number;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+export type SheStoryUpdate = Partial<Omit<SheStoryRow, 'id'>>;
+
 export interface Database {
   public: {
     Tables: {
@@ -34,6 +55,11 @@ export interface Database {
         Row: ImpactStoryRow;
         Insert: ImpactStoryInsert;
         Update: ImpactStoryUpdate;
+      };
+      she_stories: {
+        Row: SheStoryRow;
+        Insert: SheStoryInsert;
+        Update: SheStoryUpdate;
       };
     };
   };

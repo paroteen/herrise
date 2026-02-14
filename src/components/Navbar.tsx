@@ -11,6 +11,7 @@ const navItems: NavItem[] = [
   { label: 'Programmes', path: '/programmes' },
   { label: 'Projects', path: '/projects' },
   { label: 'Impact Stories', path: '/impact-stories' },
+  { label: 'She Stories', path: '/she-stories' },
   { label: 'M & E', path: '/monitoring-evaluation' },
   { label: 'Partnerships', path: '/partnerships' },
   { label: 'Get Involved', path: '/get-involved' },

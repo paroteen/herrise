@@ -28,3 +28,18 @@ NOTIFY pgrst, 'reload schema';
 ```
 
 Then try updating a story again in the admin. If it still fails, try **Project Settings → General → Restart project** to force a full schema reload.
+
+---
+
+## She Stories: photo upload fails ("Bucket not found")
+
+The She Stories admin uses Supabase Storage for photo uploads. Create the bucket once:
+
+1. **Supabase Dashboard → Storage**
+2. **New bucket** → Name: `she-stories`
+3. Set the bucket to **Public** (so the public URL works for displaying images)
+4. Under **Policies**, allow:
+   - **SELECT** for `anon` and `authenticated` (public read)
+   - **INSERT** and **UPDATE** for `authenticated` only
+
+After the bucket exists, "Upload file" in Admin → She Stories will work.
