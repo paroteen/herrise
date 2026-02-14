@@ -18,26 +18,32 @@ function rowToStory(row: ImpactStoryRow): ImpactStory {
   };
 }
 
-/** Fetch all impact stories (Supabase if configured, else static). */
+/** Fetch all impact stories (Supabase if configured, else static). Falls back to static list if DB is empty or request fails. */
 export async function fetchStories(): Promise<ImpactStory[]> {
   if (!supabase) return impactStories;
-  const { data, error } = await supabase
-    .from('impact_stories')
-    .select('*')
-    .order('id', { ascending: false });
-  if (error) throw new Error(error.message);
-  return (data ?? []).map(rowToStory);
+  try {
+    const { data, error } = await supabase
+      .from('impact_stories')
+      .select('*')
+      .order('id', { ascending: false });
+    if (error) return impactStories;
+    const list = (data ?? []).map(rowToStory);
+    return list.length > 0 ? list : impactStories;
+  } catch {
+    return impactStories;
+  }
 }
 
-/** Fetch one story by id (Supabase if configured, else static). */
+/** Fetch one story by id (Supabase if configured, else static). Falls back to static if not in DB. */
 export async function fetchStory(id: number): Promise<ImpactStory | null> {
-  if (!supabase) return impactStories.find((s) => s.id === id) ?? null;
+  const fromStatic = impactStories.find((s) => s.id === id) ?? null;
+  if (!supabase) return fromStatic;
   const { data, error } = await supabase
     .from('impact_stories')
     .select('*')
     .eq('id', id)
     .single();
-  if (error || !data) return null;
+  if (error || !data) return fromStatic;
   return rowToStory(data);
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { NavItem } from '@/types';
@@ -21,6 +21,12 @@ export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const location = useLocation();
+
+  // Close donation modal and mobile menu when navigating to another page
+  useEffect(() => {
+    setIsDonationModalOpen(false);
+    setIsOpen(false);
+  }, [location.pathname]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
