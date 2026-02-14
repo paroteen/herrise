@@ -1,13 +1,19 @@
 import React from 'react';
-import { fetchStories, fetchStory } from '@/services/storiesApi';
+import { fetchStories, fetchStoriesFromDB, fetchStory } from '@/services/storiesApi';
 import type { ImpactStory } from '@/data/impactStories';
 
-export function useStories(): {
+export type UseStoriesOptions = {
+  /** When true, fetch only from DB (no static fallback). Use in admin for true empty state + seed. */
+  fromDBOnly?: boolean;
+};
+
+export function useStories(options?: UseStoriesOptions): {
   stories: ImpactStory[];
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
 } {
+  const fromDBOnly = options?.fromDBOnly ?? false;
   const [stories, setStories] = React.useState<ImpactStory[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -16,7 +22,7 @@ export function useStories(): {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchStories();
+      const data = fromDBOnly ? await fetchStoriesFromDB() : await fetchStories();
       setStories(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load stories');
@@ -24,7 +30,7 @@ export function useStories(): {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fromDBOnly]);
 
   React.useEffect(() => {
     load();

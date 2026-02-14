@@ -18,7 +18,22 @@ function rowToStory(row: ImpactStoryRow): ImpactStory {
   };
 }
 
-/** Fetch all impact stories (Supabase if configured, else static). Falls back to static list if DB is empty or request fails. */
+/** Fetch from DB only (no static fallback). Returns [] when empty or on error. Use in admin for true empty state. */
+export async function fetchStoriesFromDB(): Promise<ImpactStory[]> {
+  if (!supabase) return [];
+  try {
+    const { data, error } = await supabase
+      .from('impact_stories')
+      .select('*')
+      .order('id', { ascending: false });
+    if (error) return [];
+    return (data ?? []).map((row) => rowToStory(row as ImpactStoryRow));
+  } catch {
+    return [];
+  }
+}
+
+/** Fetch all impact stories. Single source of truth: DB when non-empty, else static fallback for public display. */
 export async function fetchStories(): Promise<ImpactStory[]> {
   if (!supabase) return impactStories;
   try {
@@ -42,7 +57,7 @@ export async function fetchStory(id: number): Promise<ImpactStory | null> {
     .from('impact_stories')
     .select('*')
     .eq('id', id)
-    .single();
+    .maybeSingle();
   if (error || !data) return fromStatic;
   return rowToStory(data);
 }
@@ -50,30 +65,30 @@ export async function fetchStory(id: number): Promise<ImpactStory | null> {
 /** Create story (Supabase only; requires auth). */
 export async function createStory(story: Omit<ImpactStory, 'id'>): Promise<ImpactStory> {
   if (!supabase) throw new Error('Supabase not configured');
-  const { data, error } = await supabase
-    .from('impact_stories')
-    .insert({
-      title: story.title,
-      excerpt: story.excerpt,
-      image: story.image,
-      date: story.date,
-      read_time: story.readTime,
-      location: story.location,
-      category: story.category,
-      author: story.author,
-      author_role: story.authorRole,
-      content: story.content,
-    })
-    .select('*')
-    .single();
+  const row = {
+    title: story.title,
+    excerpt: story.excerpt,
+    image: story.image,
+    date: story.date,
+    read_time: story.readTime,
+    location: story.location,
+    category: story.category,
+    author: story.author,
+    author_role: story.authorRole,
+    content: story.content,
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await supabase.from('impact_stories').insert(row as any).select('*').maybeSingle();
   if (error) throw new Error(error.message);
-  return rowToStory(data);
+  if (!data) throw new Error('Create succeeded but no row returned (check RLS or triggers)');
+  return rowToStory(data as ImpactStoryRow);
 }
 
 /** Update story (Supabase only; requires auth). */
 export async function updateStory(id: number, story: Partial<Omit<ImpactStory, 'id'>>): Promise<ImpactStory> {
   if (!supabase) throw new Error('Supabase not configured');
-  const update: Record<string, unknown> = {};
+  // Build payload with exact snake_case column names; omit undefined so we don't send them.
+  const update: Record<string, string> = {};
   if (story.title !== undefined) update.title = story.title;
   if (story.excerpt !== undefined) update.excerpt = story.excerpt;
   if (story.image !== undefined) update.image = story.image;
@@ -84,14 +99,18 @@ export async function updateStory(id: number, story: Partial<Omit<ImpactStory, '
   if (story.author !== undefined) update.author = story.author;
   if (story.authorRole !== undefined) update.author_role = story.authorRole;
   if (story.content !== undefined) update.content = story.content;
-  const { data, error } = await supabase
-    .from('impact_stories')
-    .update(update)
-    .eq('id', id)
-    .select('*')
-    .single();
-  if (error) throw new Error(error.message);
-  return rowToStory(data);
+  if (Object.keys(update).length === 0) {
+    const existing = await fetchStory(id);
+    if (existing) return existing;
+    throw new Error('No fields to update');
+  }
+
+  // Supabase typed client can resolve to never if Database types don't match; payload is correct at runtime.
+  // @ts-expect-error - update payload matches impact_stories columns (snake_case)
+  const { data, error } = await supabase.from('impact_stories').update(update).eq('id', id).select('*').maybeSingle();
+  if (error) throw new Error(error.message + (error.details ? ` (${error.details})` : ''));
+  if (!data) throw new Error('Story not found or update had no effect. The story may have been deleted or the id may be wrong.');
+  return rowToStory(data as ImpactStoryRow);
 }
 
 /** Delete story (Supabase only; requires auth). */
@@ -99,4 +118,32 @@ export async function deleteStory(id: number): Promise<void> {
   if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('impact_stories').delete().eq('id', id);
   if (error) throw new Error(error.message);
+}
+
+/** Legacy static stories (IDs 1–5). Used for seed and fallback. */
+const legacyStories = impactStories;
+
+/**
+ * Seed impact_stories with the legacy static array. Inserts rows without id so the DB assigns ids.
+ * Returns the created stories with database-generated ids (avoids ID mismatch on edit).
+ * Requires Supabase and authenticated user.
+ */
+export async function seedInitialStories(): Promise<ImpactStory[]> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const rows = legacyStories.map((s) => ({
+    title: s.title,
+    excerpt: s.excerpt,
+    image: s.image,
+    date: s.date,
+    read_time: s.readTime,
+    location: s.location,
+    category: s.category,
+    author: s.author,
+    author_role: s.authorRole,
+    content: s.content,
+  }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await supabase.from('impact_stories').insert(rows as any).select('*');
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => rowToStory(row as ImpactStoryRow));
 }

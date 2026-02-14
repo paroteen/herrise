@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStories } from '@/hooks/useStories';
 import { supabase } from '@/lib/supabase';
-import { createStory, updateStory, deleteStory } from '@/services/storiesApi';
+import { createStory, updateStory, deleteStory, seedInitialStories } from '@/services/storiesApi';
 import type { ImpactStory } from '@/data/impactStories';
 import { useToast } from './ToastContext';
 import { AdminLayout } from './AdminLayout';
-import { Loader2, Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, AlertCircle, Database } from 'lucide-react';
 
 const EMPTY_FORM: Omit<ImpactStory, 'id'> = {
   title: '',
@@ -37,11 +37,12 @@ const FORM_FIELDS: { key: keyof Omit<ImpactStory, 'id'>; label: string; type?: s
 export function AdminStories() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { stories, loading, error, refetch } = useStories();
+  const { stories, loading, error, refetch } = useStories({ fromDBOnly: true });
   const [authChecked, setAuthChecked] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<Omit<ImpactStory, 'id'>>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -76,14 +77,38 @@ export function AdminStories() {
     setForm(EMPTY_FORM);
   }, []);
 
+  const handleSeedInitialStories = async () => {
+    if (!supabase) return;
+    setSeeding(true);
+    try {
+      const created = await seedInitialStories();
+      toast(`Seeded ${created.length} initial stories. They now use database IDs.`, 'success');
+      await refetch();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Seed failed', 'error');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
     setSaving(true);
     try {
       if (editingId !== null) {
-        await updateStory(editingId, form);
-        toast('Story updated.', 'success');
+        try {
+          await updateStory(editingId, form);
+          toast('Story updated.', 'success');
+        } catch (updateErr) {
+          const msg = updateErr instanceof Error ? updateErr.message : '';
+          if (msg.includes('Story not found') || msg.includes('no effect')) {
+            await createStory(form);
+            toast('Story was not in the database; created as new story.', 'success');
+          } else {
+            throw updateErr;
+          }
+        }
       } else {
         await createStory(form);
         toast('Story created.', 'success');
@@ -92,7 +117,11 @@ export function AdminStories() {
       setEditingId(null);
       await refetch();
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Save failed', 'error');
+      const message = err instanceof Error ? err.message : 'Save failed';
+      toast(message, 'error');
+      if (typeof message === 'string' && (message.includes('schema cache') || message.includes('author_role'))) {
+        console.warn('HerRise admin: If update fails with "schema cache" or "author_role", run in Supabase SQL Editor: NOTIFY pgrst, \'reload schema\';');
+      }
     } finally {
       setSaving(false);
     }
@@ -192,9 +221,32 @@ export function AdminStories() {
               </div>
             </div>
           ) : stories.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 py-8 text-center text-slate-500">
-              No stories yet. Create one with the form.
-            </p>
+            <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center">
+              <p className="text-slate-600 mb-4">No stories in the database yet.</p>
+              <p className="text-sm text-slate-500 mb-4">
+                Seed the app&apos;s initial stories (with database-generated IDs), or create one manually below.
+              </p>
+              {supabase && (
+                <button
+                  type="button"
+                  onClick={handleSeedInitialStories}
+                  disabled={seeding}
+                  className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+                >
+                  {seeding ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Seeding…
+                    </>
+                  ) : (
+                    <>
+                      <Database className="h-4 w-4" />
+                      Seed Initial Stories
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           ) : (
             <ul className="space-y-2">
               {stories.map((s) => (
