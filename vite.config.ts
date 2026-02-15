@@ -37,19 +37,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react-dom') || id.includes('react/')) return 'vendor-react';
-            if (id.includes('react-router')) return 'vendor-router';
-            if (id.includes('recharts')) return 'vendor-recharts';
-            if (id.includes('lucide-react')) return 'vendor-lucide';
-            if (id.includes('@supabase')) return 'vendor-supabase';
-            return 'vendor';
-          }
-        },
-      },
-    },
+    // Avoid manualChunks: splitting React/lucide-react into separate chunks can cause
+    // "Cannot set properties of undefined (setting 'Activity')" at runtime (lucide-react + React 19).
   },
 });
