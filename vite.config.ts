@@ -13,7 +13,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    // Fail the build if Supabase env vars are missing (e.g. on Vercel)
+    // Warn (don't fail) if Supabase env vars are missing so the app can still deploy and use static fallback data
     {
       name: 'validate-env',
       configResolved() {
@@ -21,8 +21,8 @@ export default defineConfig({
           const url = process.env.VITE_SUPABASE_URL;
           const key = process.env.VITE_SUPABASE_ANON_KEY;
           if (!url || !key) {
-            throw new Error(
-              'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. Set them in Vercel → Project → Settings → Environment Variables for Production.'
+            console.warn(
+              '[vite] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY. App will use static data. Set them in Vercel → Project → Settings → Environment Variables for Production to use Supabase.'
             );
           }
         }

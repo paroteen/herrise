@@ -7,13 +7,16 @@ const BUCKET = 'she-stories';
 
 function rowToStory(row: SheStoryRow): SheStory {
   const changeAchieved = Array.isArray(row.change_achieved) ? row.change_achieved : [];
+  const quotesArray = Array.isArray(row.quotes) ? row.quotes : [];
+  const quotes =
+    quotesArray.length > 0 ? quotesArray : row.quote != null && row.quote !== '' ? [row.quote] : [];
   return {
     id: Number(row.id),
     title: row.title,
     name: row.name,
     content: row.content ?? '',
-    changeAchieved: changeAchieved,
-    quotes: row.quote ?? '',
+    changeAchieved,
+    quotes,
     photo: row.image_url ?? '',
     photoCaption: row.image_caption ?? '',
   };
@@ -85,7 +88,7 @@ export async function createSheStory(story: Omit<SheStory, 'id'>): Promise<SheSt
     name: story.name,
     content: story.content ?? '',
     change_achieved: story.changeAchieved ?? [],
-    quote: story.quotes ?? '',
+    quotes: Array.isArray(story.quotes) ? story.quotes : story.quotes ? [story.quotes] : [],
     image_url: story.photo ?? '',
     image_caption: story.photoCaption ?? '',
   };
@@ -103,7 +106,8 @@ export async function updateSheStory(id: number, story: Partial<Omit<SheStory, '
   if (story.name !== undefined) update.name = story.name;
   if (story.content !== undefined) update.content = story.content;
   if (story.changeAchieved !== undefined) update.change_achieved = story.changeAchieved;
-  if (story.quotes !== undefined) update.quote = story.quotes;
+  if (story.quotes !== undefined)
+    update.quotes = Array.isArray(story.quotes) ? story.quotes : story.quotes ? [story.quotes] : [];
   if (story.photo !== undefined) update.image_url = story.photo;
   if (story.photoCaption !== undefined) update.image_caption = story.photoCaption;
   if (Object.keys(update).length === 0) {

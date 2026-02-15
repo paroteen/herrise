@@ -15,6 +15,12 @@ import SheStories from '@/pages/SheStories';
 import StoryDetail from '@/components/StoryDetail';
 import { AdminStories, AdminSheStories, AdminLogin, ToastProvider } from '@/admin';
 
+// #region agent log
+const DEBUG_LOG = (location: string, message: string, data: Record<string, unknown>, hypothesisId: string) => {
+  fetch('http://127.0.0.1:7243/ingest/15d72b18-4db9-409d-a404-3915799ed5f7', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location, message, data, timestamp: Date.now(), hypothesisId }) }).catch(() => {});
+};
+// #endregion
+
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   React.useEffect(() => {
@@ -26,6 +32,9 @@ const ScrollToTop = () => {
 const AppLayout: React.FC = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  // #region agent log
+  DEBUG_LOG('App.tsx:AppLayout', 'AppLayout render', { pathname: location.pathname }, 'H2');
+  // #endregion
 
   return (
     <>
@@ -56,10 +65,15 @@ const AppLayout: React.FC = () => {
   );
 };
 
-const App: React.FC = () => (
-  <BrowserRouter>
-    <AppLayout />
-  </BrowserRouter>
-);
+const App: React.FC = () => {
+  // #region agent log
+  DEBUG_LOG('App.tsx:App', 'App component rendering', {}, 'H2');
+  // #endregion
+  return (
+    <BrowserRouter>
+      <AppLayout />
+    </BrowserRouter>
+  );
+};
 
 export default App;

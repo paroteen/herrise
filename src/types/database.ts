@@ -33,7 +33,8 @@ export type SheStoryRow = {
   name: string;
   content: string;
   change_achieved: string[];
-  quote: string;
+  quote?: string;
+  quotes: string[];
   image_url: string;
   image_caption: string;
   created_at: string | null;

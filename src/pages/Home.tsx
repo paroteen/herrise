@@ -6,6 +6,12 @@ import { useCountUpWithRef } from '@/hooks/useCountUp';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { PageMeta } from '@/components/PageMeta';
 
+// #region agent log
+const DEBUG_LOG = (location: string, message: string, data: Record<string, unknown>, hypothesisId: string) => {
+  fetch('http://127.0.0.1:7243/ingest/15d72b18-4db9-409d-a404-3915799ed5f7', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location, message, data, timestamp: Date.now(), hypothesisId }) }).catch(() => {});
+};
+// #endregion
+
 const stats: Stat[] = [
   { label: 'Women Empowered', value: '300', description: 'Across 30 active women\'s groups' },
   { label: 'Girls in School', value: '50+', description: 'Supported with materials & mentorship' },
@@ -53,6 +59,9 @@ const AnimatedStat: React.FC<{ stat: Stat; index: number }> = ({ stat, index }) 
 };
 
 export const Home: React.FC = () => {
+  // #region agent log
+  DEBUG_LOG('Home.tsx:Home', 'Home component render', {}, 'H3');
+  // #endregion
   const [missionRef, missionVisible] = useScrollAnimation({ threshold: 0.2 });
   const [ctaRef, ctaVisible] = useScrollAnimation({ threshold: 0.2 });
 

@@ -28,14 +28,14 @@ export interface Project {
   description: string;
 }
 
-/** She Stories: short, personal stories with content, change achieved, and quotes. */
+/** She Stories: short, personal stories with content, change achieved, and quotes (array). */
 export interface SheStory {
   id: number;
   title: string;
   name: string;
   content: string;
   changeAchieved: string[];
-  quotes: string;
+  quotes: string[];
   photo: string;
   photoCaption: string;
 }

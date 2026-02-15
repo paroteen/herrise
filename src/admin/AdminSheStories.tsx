@@ -18,7 +18,7 @@ const EMPTY_FORM: Omit<SheStory, 'id'> = {
   name: '',
   content: '',
   changeAchieved: [''],
-  quotes: '',
+  quotes: [''],
   photo: '',
   photoCaption: '',
 };
@@ -47,12 +47,13 @@ export function AdminSheStories() {
 
   const handleEdit = useCallback((s: SheStory) => {
     setEditingId(s.id);
+    const quotes = Array.isArray(s.quotes) ? s.quotes : s.quotes ? [s.quotes] : [''];
     setForm({
       title: s.title,
       name: s.name,
       content: s.content ?? '',
       changeAchieved: s.changeAchieved?.length ? s.changeAchieved : [''],
-      quotes: s.quotes ?? '',
+      quotes: quotes.length ? quotes : [''],
       photo: s.photo ?? '',
       photoCaption: s.photoCaption ?? '',
     });
@@ -89,6 +90,30 @@ export function AdminSheStories() {
     });
   }, []);
 
+  const updateQuotes = useCallback((index: number, value: string) => {
+    setForm((prev) => {
+      const next = [...(Array.isArray(prev.quotes) ? prev.quotes : prev.quotes ? [prev.quotes] : [''])];
+      next[index] = value;
+      return { ...prev, quotes: next };
+    });
+  }, []);
+
+  const addQuote = useCallback(() => {
+    setForm((prev) => ({
+      ...prev,
+      quotes: [...(Array.isArray(prev.quotes) ? prev.quotes : prev.quotes ? [prev.quotes] : ['']), ''],
+    }));
+  }, []);
+
+  const removeQuote = useCallback((index: number) => {
+    setForm((prev) => {
+      const next = (Array.isArray(prev.quotes) ? prev.quotes : prev.quotes ? [prev.quotes] : ['']).filter(
+        (_, i) => i !== index
+      );
+      return { ...prev, quotes: next.length ? next : [''] };
+    });
+  }, []);
+
   const handleFileUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -116,9 +141,13 @@ export function AdminSheStories() {
       const changeAchieved = (form.changeAchieved || [''])
         .map((s) => s.trim())
         .filter(Boolean);
+      const quotes = (Array.isArray(form.quotes) ? form.quotes : form.quotes ? [form.quotes] : [])
+        .map((s) => (typeof s === 'string' ? s : '').trim())
+        .filter(Boolean);
       const payload = {
         ...form,
         changeAchieved: changeAchieved.length ? changeAchieved : [],
+        quotes: quotes.length ? quotes : [],
       };
       if (editingId !== null) {
         try {
@@ -336,13 +365,35 @@ export function AdminSheStories() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Quotes</label>
-              <textarea
-                value={form.quotes}
-                onChange={(e) => updateForm('quotes', e.target.value)}
-                rows={2}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
-              />
+              <label className="mb-1 block text-sm font-medium text-slate-700">Quotes (testimonials)</label>
+              <div className="space-y-2">
+                {(Array.isArray(form.quotes) ? form.quotes : form.quotes ? [form.quotes] : ['']).map((q, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={typeof q === 'string' ? q : ''}
+                      onChange={(e) => updateQuotes(i, e.target.value)}
+                      placeholder="Quote or testimonial"
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeQuote(i)}
+                      className="p-2 text-slate-400 hover:text-red-600 rounded shrink-0"
+                      aria-label="Remove quote"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addQuote}
+                  className="text-sm text-violet-600 hover:text-violet-700 font-medium"
+                >
+                  + Add Quote
+                </button>
+              </div>
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Photo</label>
