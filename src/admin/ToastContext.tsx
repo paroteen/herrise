@@ -62,7 +62,7 @@ function ToastContainer({ toasts, onDismiss }: { toasts: ToastItem[]; onDismiss:
   );
 }
 
-function ToastItem({ item, onDismiss }: { item: ToastItem; onDismiss: (id: string) => void }) {
+function ToastItem({ item, onDismiss }: { item: ToastItem; onDismiss: (id: string) => void; key?: string }) {
   const { type, message, id } = item;
   const base =
     'pointer-events-auto rounded-xl border shadow-lg px-4 py-3 text-sm font-medium transition-all duration-300 ease-out';

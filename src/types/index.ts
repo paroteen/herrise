@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface NavItem {
   label: string;
   path: string;
@@ -7,7 +9,7 @@ export interface Programme {
   id: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   impact: string;
   image: string;
 }

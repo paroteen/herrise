@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import type { SheStoryRow } from '@/types/database';
-import { sheStories as legacyStories, type SheStory } from '@/data/sheStories';
+import type { SheStory } from '@/types';
+import { sheStories as legacyStories } from '@/data/sheStories';
 
 const BUCKET = 'she-stories';
 
