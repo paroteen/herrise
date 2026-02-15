@@ -19,25 +19,24 @@ export const SheStoryCard: React.FC<SheStoryCardProps> = ({ story }) => {
   const quoteBlock = (quote: string, index: number) => (
     <blockquote
       key={index}
-      className="relative my-6 rounded-r-xl bg-white/40 backdrop-blur-sm py-5 pl-5 pr-5 shadow-md overflow-hidden"
-      style={{ boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06)' }}
+      className="group relative my-8 rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white py-6 pl-6 pr-6 sm:pl-8 sm:pr-8 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
     >
+      {/* Left accent bar */}
       <div
-        className="absolute left-0 top-0 bottom-0 w-1 rounded-l"
-        style={{ background: 'linear-gradient(to bottom, rgb(244 63 94), rgb(251 146 60))' }}
+        className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b from-rose-400 via-rose-500 to-amber-500"
         aria-hidden
       />
+      {/* Decorative opening quote */}
       <span
-        className="pointer-events-none absolute left-5 top-1 font-serif text-8xl text-rose-400/25 select-none"
+        className="pointer-events-none absolute left-5 top-4 font-serif text-7xl sm:text-8xl text-rose-300/30 select-none leading-none"
         aria-hidden
       >
         &ldquo;
       </span>
-      <p className="relative font-serif text-lg italic text-slate-700 leading-relaxed pl-8">
-        &ldquo;{quote}&rdquo;
-      </p>
-      <p className="relative mt-2 pl-8 text-sm font-semibold text-slate-600 not-italic">
-        
+      <p className="relative font-serif text-lg sm:text-xl text-slate-700 leading-relaxed pl-10 sm:pl-12 pr-2">
+        <span className="text-rose-400/80 font-medium not-italic">&ldquo;</span>
+        {quote}
+        <span className="text-rose-400/80 font-medium not-italic">&rdquo;</span>
       </p>
     </blockquote>
   );

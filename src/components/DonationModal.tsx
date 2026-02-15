@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface DonationModalProps {
@@ -17,6 +18,20 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, onDonate
   const [purpose, setPurpose] = useState<string>('general');
   const [message, setMessage] = useState<string>('');
   const [consent, setConsent] = useState<boolean>(false);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -43,15 +58,29 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, onDonate
     setAmount(0);
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
+  const modalContent = (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4 overflow-y-auto"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="donation-modal-title"
+    >
+      <div
+        className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="relative p-6 sm:p-10">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-full text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            aria-label="Close donation form"
+          >
             <X size={24} />
           </button>
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">Donate Now</h2>
+            <h2 id="donation-modal-title" className="text-2xl sm:text-3xl font-semibold text-gray-800">Donate Now</h2>
             <p className="mt-2 text-sm sm:text-base text-gray-600">
               Your donation makes a difference. Please fill out the form below to contribute.
             </p>
@@ -126,6 +155,8 @@ const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose, onDonate
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default DonationModal;

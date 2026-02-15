@@ -87,11 +87,11 @@ export const Contact: React.FC = () => {
                         <h3 className="font-bold text-gray-900">Key Contacts</h3>
                         <div className="mb-2">
                              <p className="text-gray-700 font-semibold text-sm">Primrose Kibirigi (Executive Director)</p>
-                             <p className="text-gray-600">+256 700 349 144</p>
+                             
                         </div>
                         <div>
                              <p className="text-gray-700 font-semibold text-sm">Sarah Nyesigire (Programs Director)</p>
-                             <p className="text-gray-600">+256 786 153 027</p>
+                             
                         </div>
                     </div>
                 </div>
