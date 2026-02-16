@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase';
 import type { ImpactStoryRow } from '@/types/database';
 import { impactStories, type ImpactStory } from '@/data/impactStories';
 
+const BUCKET = 'impact-stories';
+
 function rowToStory(row: ImpactStoryRow): ImpactStory {
   return {
     id: Number(row.id),
@@ -15,6 +17,7 @@ function rowToStory(row: ImpactStoryRow): ImpactStory {
     author: row.author,
     authorRole: row.author_role,
     content: row.content,
+    isFeatured: row.is_featured ?? false,
   };
 }
 
@@ -62,6 +65,20 @@ export async function fetchStory(id: number): Promise<ImpactStory | null> {
   return rowToStory(data);
 }
 
+/** Upload image to storage; returns public URL. Requires auth. Create bucket "impact-stories" in Supabase Dashboard (public) if missing. */
+export async function uploadImpactStoryImage(file: File): Promise<string> {
+  if (!supabase) throw new Error('Supabase not configured');
+  const ext = file.name.split('.').pop() || 'jpg';
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
+  const { data, error } = await supabase.storage.from(BUCKET).upload(path, file, {
+    cacheControl: '3600',
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
+  return urlData.publicUrl;
+}
+
 /** Create story (Supabase only; requires auth). */
 export async function createStory(story: Omit<ImpactStory, 'id'>): Promise<ImpactStory> {
   if (!supabase) throw new Error('Supabase not configured');
@@ -76,6 +93,7 @@ export async function createStory(story: Omit<ImpactStory, 'id'>): Promise<Impac
     author: story.author,
     author_role: story.authorRole,
     content: story.content,
+    is_featured: story.isFeatured ?? false,
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await supabase.from('impact_stories').insert(row as any).select('*').maybeSingle();
@@ -88,7 +106,7 @@ export async function createStory(story: Omit<ImpactStory, 'id'>): Promise<Impac
 export async function updateStory(id: number, story: Partial<Omit<ImpactStory, 'id'>>): Promise<ImpactStory> {
   if (!supabase) throw new Error('Supabase not configured');
   // Build payload with exact snake_case column names; omit undefined so we don't send them.
-  const update: Record<string, string> = {};
+  const update: Record<string, string | boolean> = {};
   if (story.title !== undefined) update.title = story.title;
   if (story.excerpt !== undefined) update.excerpt = story.excerpt;
   if (story.image !== undefined) update.image = story.image;
@@ -99,6 +117,7 @@ export async function updateStory(id: number, story: Partial<Omit<ImpactStory, '
   if (story.author !== undefined) update.author = story.author;
   if (story.authorRole !== undefined) update.author_role = story.authorRole;
   if (story.content !== undefined) update.content = story.content;
+  if (story.isFeatured !== undefined) update.is_featured = story.isFeatured;
   if (Object.keys(update).length === 0) {
     const existing = await fetchStory(id);
     if (existing) return existing;

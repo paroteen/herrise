@@ -15,6 +15,7 @@ export type ImpactStoryRow = {
   author: string;
   author_role: string;
   content: string;
+  is_featured: boolean | null;
   created_at: string | null;
   updated_at: string | null;
 };

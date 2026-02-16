@@ -15,6 +15,7 @@ export interface ImpactStory {
   author: string;
   authorRole: string;
   content: string;
+  isFeatured?: boolean;
 }
 
 export const impactStories: ImpactStory[] = [

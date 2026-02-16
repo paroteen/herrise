@@ -2,11 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStories } from '@/hooks/useStories';
 import { supabase } from '@/lib/supabase';
-import { createStory, updateStory, deleteStory, seedInitialStories } from '@/services/storiesApi';
+import { createStory, updateStory, deleteStory, seedInitialStories, uploadImpactStoryImage } from '@/services/storiesApi';
 import type { ImpactStory } from '@/data/impactStories';
 import { useToast } from './ToastContext';
 import { AdminLayout } from './AdminLayout';
-import { Loader2, Plus, Pencil, Trash2, AlertCircle, Database } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, AlertCircle, Database, Upload, Star } from 'lucide-react';
 
 const EMPTY_FORM: Omit<ImpactStory, 'id'> = {
   title: '',
@@ -19,6 +19,7 @@ const EMPTY_FORM: Omit<ImpactStory, 'id'> = {
   author: '',
   authorRole: '',
   content: '',
+  isFeatured: false,
 };
 
 const FORM_FIELDS: { key: keyof Omit<ImpactStory, 'id'>; label: string; type?: string; rows?: number }[] = [
@@ -44,6 +45,8 @@ export function AdminStories() {
   const [saving, setSaving] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [togglingFeaturedId, setTogglingFeaturedId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!supabase) {
@@ -69,8 +72,38 @@ export function AdminStories() {
       author: s.author,
       authorRole: s.authorRole,
       content: s.content,
+      isFeatured: s.isFeatured ?? false,
     });
   }, []);
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !supabase) return;
+    setUploading(true);
+    try {
+      const url = await uploadImpactStoryImage(file);
+      setForm((f) => ({ ...f, image: url }));
+      toast('Image uploaded successfully', 'success');
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Upload failed', 'error');
+    } finally {
+      setUploading(false);
+    }
+  }, [toast]);
+
+  const handleToggleFeatured = useCallback(async (id: number, currentStatus: boolean) => {
+    if (!supabase) return;
+    setTogglingFeaturedId(id);
+    try {
+      await updateStory(id, { isFeatured: !currentStatus });
+      toast('Featured status updated', 'success');
+      await refetch();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update featured status', 'error');
+    } finally {
+      setTogglingFeaturedId(null);
+    }
+  }, [refetch, toast]);
 
   const handleNew = useCallback(() => {
     setEditingId(null);
@@ -254,10 +287,35 @@ export function AdminStories() {
                   key={s.id}
                   className={`flex items-center justify-between gap-3 rounded-xl border bg-white px-4 py-3 shadow-sm transition ${
                     editingId === s.id ? 'border-violet-300 ring-2 ring-violet-200' : 'border-slate-200 hover:border-slate-300'
-                  }`}
+                  } ${s.isFeatured ? 'border-l-4 border-l-emerald-500' : ''}`}
                 >
-                  <span className="min-w-0 flex-1 truncate font-medium text-slate-900">{s.title}</span>
+                  <div className="min-w-0 flex-1 flex items-center gap-2">
+                    <span className="truncate font-medium text-slate-900">{s.title}</span>
+                    {s.isFeatured && (
+                      <span className="shrink-0 px-2 py-0.5 text-xs font-bold text-emerald-700 bg-emerald-100 rounded">
+                        Featured
+                      </span>
+                    )}
+                  </div>
                   <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFeatured(s.id, s.isFeatured ?? false)}
+                      disabled={togglingFeaturedId === s.id}
+                      className={`rounded-lg p-2 transition ${
+                        s.isFeatured
+                          ? 'text-emerald-600 hover:bg-emerald-50'
+                          : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600'
+                      } disabled:opacity-50`}
+                      aria-label="Toggle featured"
+                      title="Toggle featured status"
+                    >
+                      {togglingFeaturedId === s.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Star className="h-4 w-4" fill={s.isFeatured ? 'currentColor' : 'none'} />
+                      )}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleEdit(s)}
@@ -291,7 +349,39 @@ export function AdminStories() {
             {FORM_FIELDS.map(({ key, label, type = 'text', rows }) => (
               <div key={key}>
                 <label className="mb-1 block text-sm font-medium text-slate-700">{label}</label>
-                {rows ? (
+                {key === 'image' ? (
+                  <div className="space-y-2">
+                    <input
+                      type={type}
+                      value={form[key]}
+                      onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                      required
+                      placeholder="https://... or upload below"
+                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+                    />
+                    <label className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-100 hover:border-violet-400 transition">
+                      <Upload className="h-4 w-4" />
+                      {uploading ? 'Uploading…' : 'Upload Image'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                    </label>
+                    {form.image && (
+                      <img
+                        src={form.image}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg border border-slate-200"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
+                  </div>
+                ) : rows ? (
                   <textarea
                     value={form[key]}
                     onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
@@ -310,6 +400,22 @@ export function AdminStories() {
                 )}
               </div>
             ))}
+
+            {/* Featured Checkbox */}
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50">
+              <input
+                type="checkbox"
+                id="featured-checkbox"
+                checked={form.isFeatured ?? false}
+                onChange={(e) => setForm((f) => ({ ...f, isFeatured: e.target.checked }))}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-2 focus:ring-emerald-500"
+              />
+              <label htmlFor="featured-checkbox" className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                <Star className="h-4 w-4 text-emerald-600" fill={form.isFeatured ? 'currentColor' : 'none'} />
+                Featured Story
+              </label>
+            </div>
+
             <button
               type="submit"
               disabled={saving}

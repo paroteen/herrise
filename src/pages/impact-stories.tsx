@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Calendar, Clock } from 'lucide-react';
+import { ArrowRight, Calendar, Clock, Star } from 'lucide-react';
 import DonationModal from '@/components/DonationModal';
 import { PageMeta } from '@/components/PageMeta';
 import { useStories } from '@/hooks/useStories';
@@ -12,12 +12,21 @@ const ImpactStories: React.FC = () => {
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const { stories, loading, error, refetch } = useStories();
 
+  // Sort stories: featured first, then by id descending
+  const sortedStories = useMemo(() => {
+    return [...stories].sort((a, b) => {
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      return b.id - a.id;
+    });
+  }, [stories]);
+
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
     name: 'HerRise Impact Stories',
     description: 'Stories of change, resilience, and empowerment from the women and communities HerRise works with in Uganda.',
-    itemListElement: stories.map((story, index) => ({
+    itemListElement: sortedStories.map((story, index) => ({
       '@type': 'ListItem',
       position: index + 1,
       url: `${SITE_URL}/stories/${story.id}`,
@@ -62,13 +71,17 @@ const ImpactStories: React.FC = () => {
           </div>
         ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {stories.map((story) => (
+          {sortedStories.map((story) => (
             <Link 
               to={`/stories/${story.id}`}
               key={story.id}
-              className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 block"
+              className={`group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 block ${
+                story.isFeatured 
+                  ? 'border-2 border-emerald-400 shadow-lg shadow-emerald-100/50 focus:ring-emerald-500' 
+                  : 'focus:ring-purple-500'
+              }`}
             >
-              <div className="h-48 bg-gray-200 overflow-hidden">
+              <div className="h-48 bg-gray-200 overflow-hidden relative">
                 <img 
                   src={story.image} 
                   alt={story.title}
@@ -77,6 +90,12 @@ const ImpactStories: React.FC = () => {
                     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x450?text=HerRise+Story';
                   }}
                 />
+                {story.isFeatured && (
+                  <div className="absolute top-3 right-3 flex items-center gap-2 px-3 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
+                    <Star size={14} fill="currentColor" />
+                    Featured
+                  </div>
+                )}
               </div>
               <div className="p-6">
                 <div className="flex flex-wrap items-center text-sm text-gray-500 mb-3 gap-x-4">
