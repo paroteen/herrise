@@ -37,6 +37,7 @@ export type SheStoryRow = {
   quotes: string[];
   image_url: string;
   image_caption: string;
+  is_featured: boolean | null;
   created_at: string | null;
   updated_at: string | null;
 };

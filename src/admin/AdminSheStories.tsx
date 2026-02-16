@@ -11,7 +11,7 @@ import {
 import type { SheStory } from '@/types';
 import { useToast } from './ToastContext';
 import { AdminLayout } from './AdminLayout';
-import { Loader2, Plus, Pencil, Trash2, AlertCircle, Upload } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, AlertCircle, Upload, Star } from 'lucide-react';
 
 const EMPTY_FORM: Omit<SheStory, 'id'> = {
   title: '',
@@ -21,6 +21,7 @@ const EMPTY_FORM: Omit<SheStory, 'id'> = {
   quotes: [''],
   photo: '',
   photoCaption: '',
+  isFeatured: false,
 };
 
 export function AdminSheStories() {
@@ -33,6 +34,7 @@ export function AdminSheStories() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [togglingFeaturedId, setTogglingFeaturedId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!supabase) {
@@ -56,8 +58,23 @@ export function AdminSheStories() {
       quotes: quotes.length ? quotes : [''],
       photo: s.photo ?? '',
       photoCaption: s.photoCaption ?? '',
+      isFeatured: s.isFeatured ?? false,
     });
   }, []);
+
+  const handleToggleFeatured = useCallback(async (id: number, currentStatus: boolean) => {
+    if (!supabase) return;
+    setTogglingFeaturedId(id);
+    try {
+      await updateSheStory(id, { isFeatured: !currentStatus });
+      toast('Featured status updated', 'success');
+      await refetch();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Failed to update featured status', 'error');
+    } finally {
+      setTogglingFeaturedId(null);
+    }
+  }, [refetch, toast]);
 
   const handleNew = useCallback(() => {
     setEditingId(null);
@@ -270,12 +287,40 @@ export function AdminSheStories() {
                 <li
                   key={s.id}
                   className={`flex items-center justify-between gap-3 rounded-xl border bg-white px-4 py-3 shadow-sm ${
-                    editingId === s.id ? 'border-violet-300 ring-2 ring-violet-200' : 'border-slate-200'
+                    editingId === s.id ? 'border-violet-300 ring-2 ring-violet-200' : s.isFeatured ? 'border-amber-300 bg-amber-50/30' : 'border-slate-200'
                   }`}
                 >
-                  <span className="min-w-0 flex-1 truncate font-medium text-slate-900">{s.title}</span>
-                  <span className="text-sm text-slate-500">{s.name}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate font-medium text-slate-900">{s.title}</span>
+                      {s.isFeatured && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                          <Star size={10} fill="currentColor" />
+                          Featured
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-sm text-slate-500">{s.name}</span>
+                  </div>
                   <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFeatured(s.id, s.isFeatured ?? false)}
+                      disabled={togglingFeaturedId === s.id}
+                      className={`rounded-lg p-2 transition-all ${
+                        s.isFeatured 
+                          ? 'text-amber-500 hover:bg-amber-50' 
+                          : 'text-slate-400 hover:bg-amber-50 hover:text-amber-500'
+                      } disabled:opacity-50`}
+                      aria-label="Toggle featured"
+                      title={s.isFeatured ? 'Remove from featured' : 'Mark as featured'}
+                    >
+                      {togglingFeaturedId === s.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Star className="h-4 w-4" fill={s.isFeatured ? 'currentColor' : 'none'} />
+                      )}
+                    </button>
                     <button
                       type="button"
                       onClick={() => handleEdit(s)}
@@ -430,6 +475,19 @@ export function AdminSheStories() {
                 onChange={(e) => updateForm('photoCaption', e.target.value)}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               />
+            </div>
+            <div className="flex items-center gap-3 p-4 bg-amber-50/50 border border-amber-200 rounded-lg">
+              <input
+                type="checkbox"
+                id="isFeatured"
+                checked={form.isFeatured ?? false}
+                onChange={(e) => updateForm('isFeatured', e.target.checked)}
+                className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-amber-300 rounded"
+              />
+              <label htmlFor="isFeatured" className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                <Star size={16} className="text-amber-500" fill="currentColor" />
+                Mark as Featured Story (appears at top with larger card)
+              </label>
             </div>
             <button
               type="submit"

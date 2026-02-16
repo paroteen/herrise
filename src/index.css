@@ -200,3 +200,8 @@ body {
 .animate-delay-400 {
   animation-delay: 0.4s;
 }
+
+/* Smooth grid transitions for featured story reordering */
+.grid > * {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}

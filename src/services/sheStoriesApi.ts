@@ -19,6 +19,7 @@ function rowToStory(row: SheStoryRow): SheStory {
     quotes,
     photo: row.image_url ?? '',
     photoCaption: row.image_caption ?? '',
+    isFeatured: row.is_featured ?? false,
   };
 }
 
@@ -91,6 +92,7 @@ export async function createSheStory(story: Omit<SheStory, 'id'>): Promise<SheSt
     quotes: Array.isArray(story.quotes) ? story.quotes : story.quotes ? [story.quotes] : [],
     image_url: story.photo ?? '',
     image_caption: story.photoCaption ?? '',
+    is_featured: story.isFeatured ?? false,
   };
   const { data, error } = await supabase.from('she_stories').insert(row as never).select('*').maybeSingle();
   if (error) throw new Error(error.message);
@@ -110,12 +112,13 @@ export async function updateSheStory(id: number, story: Partial<Omit<SheStory, '
     update.quotes = Array.isArray(story.quotes) ? story.quotes : story.quotes ? [story.quotes] : [];
   if (story.photo !== undefined) update.image_url = story.photo;
   if (story.photoCaption !== undefined) update.image_caption = story.photoCaption;
+  if (story.isFeatured !== undefined) update.is_featured = story.isFeatured;
   if (Object.keys(update).length === 0) {
     const existing = await fetchSheStory(id);
     if (existing) return existing;
     throw new Error('No fields to update');
   }
-  const { data, error } = await supabase
+  const { data, error} = await supabase
     .from('she_stories')
     .update(update as never)
     .eq('id', id)

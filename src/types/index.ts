@@ -38,6 +38,7 @@ export interface SheStory {
   quotes: string[];
   photo: string;
   photoCaption: string;
+  isFeatured?: boolean;
 }
 
 export * from './database';

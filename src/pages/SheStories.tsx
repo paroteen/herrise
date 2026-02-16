@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { X, Share2, Facebook, Twitter, Link as LinkIcon, Search } from 'lucide-react';
+import { X, Share2, Facebook, Twitter, Link as LinkIcon, Search, Star } from 'lucide-react';
 import { PageMeta } from '@/components/PageMeta';
 import { useSheStories } from '@/hooks/useSheStories';
 import type { SheStory } from '@/types';
@@ -29,11 +29,16 @@ const StoryCard: React.FC<{
   const pullQuote = quotes[0] || story.content?.slice(0, 100) + '...' || story.title;
   const tag = story.title || 'Her Story';
   const color = cardColors[colorIndex % cardColors.length];
+  const isFeatured = story.isFeatured;
 
   return (
     <div
       onClick={onClick}
-      className={`group relative overflow-hidden rounded-xl border border-slate-200 cursor-pointer transition-all duration-500 hover:shadow-xl ${color.bg} ${color.hover}`}
+      className={`group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-500 hover:shadow-xl ${
+        isFeatured 
+          ? 'border-2 border-amber-400 shadow-lg shadow-amber-200/50' 
+          : 'border border-slate-200'
+      } ${color.bg} ${color.hover}`}
     >
       {/* Image at Top */}
       <div className="relative h-56 overflow-hidden bg-slate-200">
@@ -47,6 +52,13 @@ const StoryCard: React.FC<{
               (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Portrait';
             }}
           />
+        )}
+        {/* Featured Badge */}
+        {isFeatured && (
+          <div className="absolute top-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-amber-500 text-white text-xs font-bold rounded-full shadow-lg">
+            <Star size={14} fill="currentColor" />
+            Featured Story
+          </div>
         )}
         {/* Gradient overlay for better text contrast if needed */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -251,19 +263,29 @@ const SheStories: React.FC = () => {
   const [selectedStory, setSelectedStory] = useState<SheStory | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Real-time search filtering
+  // Real-time search filtering and sorting (featured first)
   const filteredStories = useMemo(() => {
-    if (!searchQuery.trim()) return stories;
+    let filtered = stories;
     
-    const query = searchQuery.toLowerCase();
-    return stories.filter((story) => {
-      const quotes = Array.isArray(story.quotes) ? story.quotes.join(' ') : '';
-      return (
-        story.name.toLowerCase().includes(query) ||
-        story.title.toLowerCase().includes(query) ||
-        quotes.toLowerCase().includes(query) ||
-        (story.content && story.content.toLowerCase().includes(query))
-      );
+    // Apply search filter if query exists
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = stories.filter((story) => {
+        const quotes = Array.isArray(story.quotes) ? story.quotes.join(' ') : '';
+        return (
+          story.name.toLowerCase().includes(query) ||
+          story.title.toLowerCase().includes(query) ||
+          quotes.toLowerCase().includes(query) ||
+          (story.content && story.content.toLowerCase().includes(query))
+        );
+      });
+    }
+    
+    // Sort: featured stories first, then by id descending
+    return [...filtered].sort((a, b) => {
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      return b.id - a.id;
     });
   }, [stories, searchQuery]);
 
@@ -336,7 +358,7 @@ const SheStories: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-auto gap-6">
             {filteredStories.map((story, index) => (
               <StoryCard
                 key={story.id}

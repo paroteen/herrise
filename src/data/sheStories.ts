@@ -15,6 +15,7 @@ export const sheStories: SheStory[] = [
     quotes: ['I used to think business was for men. HerRise showed me I could lead.'],
     photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&q=80',
     photoCaption: 'Grace at her shop in Kabare.',
+    isFeatured: false,
   },
   {
     id: 2,
@@ -29,5 +30,6 @@ export const sheStories: SheStory[] = [
     quotes: ['Education has no age. I am proof that it is never too late to learn.'],
     photo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
     photoCaption: 'Prossy in her tailoring workshop.',
+    isFeatured: false,
   },
 ];
