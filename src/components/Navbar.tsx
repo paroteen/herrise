@@ -63,11 +63,12 @@ export const Navbar: React.FC = () => {
       />
       <nav className="sticky top-0 z-50 bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20">
-            <div className="flex items-center">
+          <div className="flex justify-between items-center h-20 gap-8">
+            {/* Logo - Far Left */}
+            <div className="flex items-center flex-shrink-0">
               <NavLink to="/" className="flex-shrink-0">
                 <img
-                  src="/images/logo.jpeg"
+                  src="/images/herriseLogo.png"
                   alt="HerRise Initiative"
                   className="h-20 w-auto"
                   onError={(e) => {
@@ -78,13 +79,14 @@ export const Navbar: React.FC = () => {
                 />
               </NavLink>
             </div>
-            <div className="hidden lg:flex items-center space-x-1">
+            {/* Menu Items - Far Right */}
+            <div className="hidden lg:flex items-center space-x-1 flex-shrink-0">
               {navItems.map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    `px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
                       isActive ? 'text-purple-700 font-bold bg-purple-50' : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
                     }`
                   }
@@ -94,7 +96,7 @@ export const Navbar: React.FC = () => {
               ))}
               <button
                 onClick={handleDonateClick}
-                className="ml-4 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-full transition-colors shadow-sm"
+                className="ml-4 px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-full transition-colors shadow-sm whitespace-nowrap"
               >
                 Donate
               </button>
