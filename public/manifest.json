@@ -1,0 +1,31 @@
+{
+  "name": "HerRise Development Organisation",
+  "short_name": "HerRise",
+  "description": "A national NGO in Uganda dedicated to the empowerment and wellbeing of women and girls through economic empowerment, health advocacy, and education.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#9333ea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "social", "health"],
+  "lang": "en-UG"
+}
